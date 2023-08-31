@@ -20,12 +20,19 @@ body {
 }
 #question {
     height: 150px;
-    text-align: center;
+    text-align: left;
+    margin: 10px 400px;
     clear:both;
 }
 #mult-choice-answers {
+    display: flex;
+    /* align-items: center; */
+    justify-content: left;
+    flex-direction: column;
     height: 150px;
-    text-align: center;
+    margin: 10px 400px;
+    /* text-align: center;
+    clear:both; */
 }
 #choice-result {
     height: 50px;
@@ -33,6 +40,14 @@ body {
     border-top: solid lightgray;
     color: lightgray;
 }
+
+/* .answer-button {
+    width: "100px";
+    height: "40px";
+    font-size: "14px";
+    color: "white";
+    background-color: "purple";
+} */
 
 #delete-this-selector {
     color: rgb(248, 87, 240);
