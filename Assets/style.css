@@ -1,0 +1,40 @@
+/* Element selectors */
+body {
+    font-family: 'Arial', sans-serif;
+}
+/* header {
+    position: relative
+} */
+#view-high-scores {
+    height: 50px;
+    width: 50%;
+    overflow: hidden;
+    float: left;
+    /* text-align: left; */
+}
+#countdown {
+    height: 50px;
+    width: 50%;
+    float: left;
+    text-align: right;
+}
+#question {
+    height: 150px;
+    text-align: center;
+    clear:both;
+}
+#mult-choice-answers {
+    height: 150px;
+    text-align: center;
+}
+#choice-result {
+    height: 50px;
+    text-align: left;
+    border-top: solid lightgray;
+    color: lightgray;
+}
+
+#delete-this-selector {
+    color: rgb(248, 87, 240);
+    color: rgb(173, 117, 173);
+}
