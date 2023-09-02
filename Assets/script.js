@@ -8,7 +8,7 @@ let viewHSLinkEl, highScoreAnchor, quizHeader, instructions, startButton;
 let multChoiceAns;  //Table handle
 
 // Misc variables, etc.
-let getNextQuestion = true;
+let score = 0;
 
 // Var with array and object for questions 
 const questions = [
@@ -184,63 +184,91 @@ function startQuiz () {
 
     startButton.addEventListener("click", function() {
         startButton.style.backgroundColor = "rgb(173, 117, 173)";
-        accessQuestions(0);
+        questionForm(0);
     });
 }
 
-function accessQuestions (qIndex) {
-    // console.log(questions.length);
+// function accessQuestions (qIndex) {
+//     // console.log(questions.length);
 
-    // for (qIndex = 0; qIndex < questions.length; qIndex++) {
-    for (qIndex = 0; qIndex < 1; qIndex++) {
-        questionForm(qIndex);
-    }
-}
+//     // for (qIndex = 0; qIndex < questions.length; qIndex++) {
+//     for (qIndex = 0; qIndex < 1; qIndex++) {
+//         questionForm(qIndex);
+//     }
+// }
 
-function questionForm (qIndex) {
+function renderQuestionForm (qIndex) {
     // Clear section children elements
     clearContent();
 
-    // Append questionForm children
+    // Render questionForm
     // Question section
     quizQuestion = document.createElement("h2");
-    // console.log(questions[qIndex].title);
     quizQuestion.innerHTML = questions[qIndex].title;
     questionSection.appendChild(quizQuestion);
-    // console.log(questionSection);
-    
+        
     // Multiple choice answers section
+    // Initialize
     multChoiceAns = [];
-    // console.log(questions[qIndex].choices.length);
-    // console.log(multChoiceAns);
-
+    
     for (let i = 0; i < questions[qIndex].choices.length; i++) {
         multChoiceAns[qIndex] = document.createElement("button");
         multChoiceAns[qIndex].innerHTML = questions[qIndex].choices[i];
-        multChoiceAns[qIndex].style.width = "100px";
-        multChoiceAns[qIndex].style.height = "40px";
-        multChoiceAns[qIndex].style.fontSize = "14px";
+        multChoiceAns[qIndex].style.width = "250px";
+        multChoiceAns[qIndex].style.height = "60px";
+        multChoiceAns[qIndex].style.fontSize = "16px";
         multChoiceAns[qIndex].style.margin = "10px";
         multChoiceAns[qIndex].style.color = "white";
         multChoiceAns[qIndex].style.backgroundColor = "purple";
+        multChoiceAns[qIndex].style.textAlign = "start";
+        multChoiceAns[qIndex].setAttribute("data-index", i);
         multChoiceAnswers.appendChild(multChoiceAns[qIndex]);
     }
-    
-    // const questions = [
-    //     {
-    //         title: "Commonly used data types DO NOT include:",
-    //         choices: ["strings", "booleans", "alerts", "numbers"],
-    //         answer: "alerts"
-    //     },
+
+    // Choice result section
+    result = document.createElement("h3");
+    result.style.color = "lightgray";
+    result.style.fontStyle = "italic";
+    result.id = "resultText";
+    choiceResult.appendChild(result);
+}
+
+function questionForm (qIndex) {
+    console.log("Score: " + score);
+    // Render selected question and mult choice answers
+    renderQuestionForm(qIndex);
+
+    // Process selected answer
+    multChoiceAnswers.addEventListener("click", function(event) {
+        let element = event.target;
+        if (element.matches("button") && element.style.width === "250px") {
+            let idx = element.getAttribute("data-index")
+            if (multChoiceAnswers.children[idx].innerHTML = questions[qIndex].answer) {
+                resultText.innerHTML = "Correct!";
+                score = score + 5;
+            } else {
+                resultText.innerHTML = "Wrong!";
+            }
+        }
+
+        qIndex++
+        if (qIndex < 5) {
+            questionForm(qIndex);
+        } else {
+            allDoneForm();
+        }
+    });
 }
 
 function allDoneForm () {
-
+    console.log("Finished quiz.");
+    console.log("Score: " + score);
 }
 
 function highScores () {
     console.log("High score function called.");
 }
 
+//Main logic
 renderHeader();
 startQuiz();
