@@ -6,7 +6,7 @@ body {
     position: relative
 } */
 #view-high-scores {
-    height: 50px;
+    height: 125px;
     width: 50%;
     overflow: hidden;
     float: left;
@@ -21,21 +21,19 @@ body {
 #question {
     height: 150px;
     text-align: left;
-    margin: 10px 400px;
+    margin: 10px 250px 10px 350px;
     clear:both;
 }
 #mult-choice-answers {
     display: flex;
-    /* align-items: center; */
     justify-content: left;
     flex-direction: column;
     height: 170px;
-    margin: 10px 400px;
-    /* text-align: center;
-    clear:both; */
+    margin: 10px 250px 10px 350px;
 }
 #choice-result {
     height: 50px;
+    margin: 10px 250px 10px 350px;
     text-align: left;
     border-top: solid lightgray;
     color: lightgray;

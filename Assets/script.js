@@ -8,7 +8,7 @@ let viewHSLinkEl, highScoreAnchor, quizHeader, instructions, startButton;
 let multChoiceAns;  //Table handle
 
 // Misc variables, etc.
-let score = 0, qIndex = 0;
+let score = 0, qIndex = 0; resultText = "";
 
 // Var with array and object for questions 
 const questions = [
@@ -162,6 +162,7 @@ function startQuiz () {
     // Question section
     quizHeader = document.createElement("h2");
     quizHeader.innerHTML = "Coding Quiz Challenge";
+    quizHeader.style.textAlign = "center";
     questionSection.appendChild(quizHeader);
     questionSection.setAttribute("margin-left", "auto");
     questionSection.setAttribute("margin-right", "auto");
@@ -170,6 +171,7 @@ function startQuiz () {
     instructions.innerHTML = "Try to answer the following code-related questions within the time limit.<br>"
                         + "Keep in mind that incorrect answers will penalize your score/time<br>"
                         + "by ten seconds!";
+    instructions.style.textAlign = "center";
     questionSection.appendChild(instructions);
     
     // Multiple choice answers section - reused in this function only for Start button
@@ -179,7 +181,9 @@ function startQuiz () {
     startButton.style.height = "50px";
     startButton.style.fontSize = "16px";
     startButton.style.color = "white";
+    startButton.style.borderRadius = "10px";
     startButton.style.backgroundColor = "purple";
+    startButton.setAttribute("id","start-quiz");
     multChoiceAnswers.appendChild(startButton);
 }
 
@@ -202,12 +206,14 @@ function renderQuestionForm (qIndex) {
         multChoiceAns[qIndex] = document.createElement("button");
         multChoiceAns[qIndex].innerHTML = questions[qIndex].choices[i];
         multChoiceAns[qIndex].style.width = "250px";
-        multChoiceAns[qIndex].style.height = "60px";
+        multChoiceAns[qIndex].style.height = "80px";
         multChoiceAns[qIndex].style.fontSize = "16px";
-        multChoiceAns[qIndex].style.margin = "10px";
+        multChoiceAns[qIndex].style.margin = "5px";
         multChoiceAns[qIndex].style.color = "white";
         multChoiceAns[qIndex].style.backgroundColor = "purple";
         multChoiceAns[qIndex].style.textAlign = "start";
+        multChoiceAns[qIndex].style.borderRadius = "10px";
+        multChoiceAns[qIndex].setAttribute("id","quiz-answer-" + i);
         multChoiceAns[qIndex].setAttribute("data-index", i);
         multChoiceAnswers.appendChild(multChoiceAns[qIndex]);
     }
@@ -216,7 +222,7 @@ function renderQuestionForm (qIndex) {
     result = document.createElement("h3");
     result.style.color = "lightgray";
     result.style.fontStyle = "italic";
-    result.id = "resultText";
+    result.innerHTML = resultText;
     choiceResult.appendChild(result);
 }
 
@@ -236,17 +242,17 @@ startQuiz();
 // Process button click in multChoiceAnswers section
 multChoiceAnswers.addEventListener("click", function(event) {
     let element = event.target;
+    let idx = element.getAttribute("data-index");
 
     // Check for any answer button
-    if (element.matches("button") && element.style.width === "250px") {
-        let idx = element.getAttribute("data-index")
+    if (element.matches("button") && element.id === ("quiz-answer-" + idx)) {
         if (multChoiceAnswers.children[idx].innerHTML === questions[qIndex].answer) {
-            resultText.innerHTML = "Correct!";
+            resultText = "Correct!"
             score = score + 5;
         } else {
-            resultText.innerHTML = "Wrong!";
+            resultText = "Wrong!"
         }
-        qIndex++
+        qIndex++;
         if (qIndex < 5) {
             renderQuestionForm(qIndex);
         } else {
@@ -255,7 +261,7 @@ multChoiceAnswers.addEventListener("click", function(event) {
     }
 
     // Check for Start Quiz button
-    if (element.matches("button") && element.style.width === "100px") {
+    if (element.matches("button") && element.id === "start-quiz") {
     //     startButton.style.backgroundColor = "rgb(173, 117, 173)";
         renderQuestionForm(qIndex);
     }
