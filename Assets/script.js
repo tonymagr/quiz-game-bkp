@@ -8,7 +8,7 @@ let viewHSLinkEl, highScoreAnchor, quizHeader, instructions, startButton;
 let multChoiceAns;  //Table handle
 
 // Misc variables, etc.
-let score = 0;
+let score = 0, qIndex = 0;
 
 // Var with array and object for questions 
 const questions = [
@@ -181,23 +181,10 @@ function startQuiz () {
     startButton.style.color = "white";
     startButton.style.backgroundColor = "purple";
     multChoiceAnswers.appendChild(startButton);
-
-    startButton.addEventListener("click", function() {
-        startButton.style.backgroundColor = "rgb(173, 117, 173)";
-        questionForm(0);
-    });
 }
 
-// function accessQuestions (qIndex) {
-//     // console.log(questions.length);
-
-//     // for (qIndex = 0; qIndex < questions.length; qIndex++) {
-//     for (qIndex = 0; qIndex < 1; qIndex++) {
-//         questionForm(qIndex);
-//     }
-// }
-
 function renderQuestionForm (qIndex) {
+    console.log("Score: " + score);
     // Clear section children elements
     clearContent();
 
@@ -233,33 +220,6 @@ function renderQuestionForm (qIndex) {
     choiceResult.appendChild(result);
 }
 
-function questionForm (qIndex) {
-    console.log("Score: " + score);
-    // Render selected question and mult choice answers
-    renderQuestionForm(qIndex);
-
-    // Process selected answer
-    multChoiceAnswers.addEventListener("click", function(event) {
-        let element = event.target;
-        if (element.matches("button") && element.style.width === "250px") {
-            let idx = element.getAttribute("data-index")
-            if (multChoiceAnswers.children[idx].innerHTML = questions[qIndex].answer) {
-                resultText.innerHTML = "Correct!";
-                score = score + 5;
-            } else {
-                resultText.innerHTML = "Wrong!";
-            }
-        }
-
-        qIndex++
-        if (qIndex < 5) {
-            questionForm(qIndex);
-        } else {
-            allDoneForm();
-        }
-    });
-}
-
 function allDoneForm () {
     console.log("Finished quiz.");
     console.log("Score: " + score);
@@ -272,3 +232,31 @@ function highScores () {
 //Main logic
 renderHeader();
 startQuiz();
+
+// Process button click in multChoiceAnswers section
+multChoiceAnswers.addEventListener("click", function(event) {
+    let element = event.target;
+
+    // Check for any answer button
+    if (element.matches("button") && element.style.width === "250px") {
+        let idx = element.getAttribute("data-index")
+        if (multChoiceAnswers.children[idx].innerHTML === questions[qIndex].answer) {
+            resultText.innerHTML = "Correct!";
+            score = score + 5;
+        } else {
+            resultText.innerHTML = "Wrong!";
+        }
+        qIndex++
+        if (qIndex < 5) {
+            renderQuestionForm(qIndex);
+        } else {
+            allDoneForm();
+        }
+    }
+
+    // Check for Start Quiz button
+    if (element.matches("button") && element.style.width === "100px") {
+    //     startButton.style.backgroundColor = "rgb(173, 117, 173)";
+        renderQuestionForm(qIndex);
+    }
+});
