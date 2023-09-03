@@ -1,14 +1,16 @@
-const viewHighScores = document.querySelector("#view-high-scores");
+const viewHSLinkEl = document.querySelector("#view-HS-link");
+const countDown = document.querySelector("#countdown");
 const questionSection = document.querySelector("#question");
 const multChoiceAnswers = document.querySelector("#mult-choice-answers");
 const choiceResult = document.querySelector("#choice-result");
 
 // Handles for dynamically created elements
-let viewHSLinkEl, highScoreAnchor, quizHeader, instructions, startButton;
-let multChoiceAns;  //Table handle
+let highScoreAnchor, quizHeader, instructions, startButton;
+let multChoiceAns;  //Table of target handles
+let timeInterval;  //Interval handle
 
 // Misc variables, etc.
-let score = 0, qIndex = 0; resultText = "";
+let score = 0, qIndex = 0, resultText = "", countDownMsg, secondsLeft = 10;
 
 // Var with array and object for questions 
 const questions = [
@@ -135,29 +137,32 @@ const questions = [
     }
   ];
 
-function renderHeader () {
-    highScoreAnchor = document.createElement("a");
-    highScoreAnchor.href = "#question";
-    highScoreAnchor.innerHTML = "View high scores";
-    highScoreAnchor.id = "viewHSLink";
-    viewHighScores.appendChild(highScoreAnchor);
-
-    viewHSLinkEl = document.querySelector("#viewHSLink");    
-    viewHSLinkEl.addEventListener("click", function() {
-        highScores();
-    });
-}
-
 function clearContent () {
     questionSection.innerHTML = "";
     multChoiceAnswers.innerHTML = "";
     choiceResult.innerHTML = "";
 }
 
+function countDownInterval () {
+    timeInterval = setInterval(function () {
+        if (secondsLeft === 0) {
+            clearInterval(timeInterval);
+            allDoneForm();
+        } else {
+            secondsLeft--
+            countDownMsg = "Time: " + secondsLeft;
+            countDown.innerHTML = countDownMsg;
+        }
+    },1000);
+}
+
 function startQuiz () {
+    // Display counter
+    let countDownMsg = "Time: " + secondsLeft;
+    countDown.innerHTML = countDownMsg;
+    
     // Clear section children elements
     clearContent();
-
     // Append startQuiz children
     // Question section
     quizHeader = document.createElement("h2");
@@ -183,6 +188,7 @@ function startQuiz () {
     startButton.style.color = "white";
     startButton.style.borderRadius = "10px";
     startButton.style.backgroundColor = "purple";
+    startButton.setAttribute("data-index", 0);
     startButton.setAttribute("id","start-quiz");
     multChoiceAnswers.appendChild(startButton);
 }
@@ -235,9 +241,10 @@ function highScores () {
     console.log("High score function called.");
 }
 
-//Main logic
-renderHeader();
-startQuiz();
+// Process link clicked in page header
+viewHSLinkEl.addEventListener("click", function() {
+    highScores();
+});
 
 // Process button click in multChoiceAnswers section
 multChoiceAnswers.addEventListener("click", function(event) {
@@ -256,13 +263,33 @@ multChoiceAnswers.addEventListener("click", function(event) {
         if (qIndex < 5) {
             renderQuestionForm(qIndex);
         } else {
+            clearInterval(timeInterval);
             allDoneForm();
         }
     }
 
     // Check for Start Quiz button
     if (element.matches("button") && element.id === "start-quiz") {
-    //     startButton.style.backgroundColor = "rgb(173, 117, 173)";
+        countDownInterval();
         renderQuestionForm(qIndex);
     }
 });
+
+multChoiceAnswers.addEventListener("mouseover", function(event) {
+    let element = event.target;
+    if (element.matches("button")) {
+        let idx = element.getAttribute("data-index");
+        multChoiceAnswers.children[idx].style.backgroundColor = "rgb(173, 117, 173)";
+    }
+});
+
+multChoiceAnswers.addEventListener("mouseout", function(event) {
+    let element = event.target;
+    if (element.matches("button")) {
+        let idx = element.getAttribute("data-index");
+        multChoiceAnswers.children[idx].style.backgroundColor = "purple";
+    }
+});
+
+//Main logic
+startQuiz();
