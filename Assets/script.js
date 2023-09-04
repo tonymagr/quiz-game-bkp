@@ -7,11 +7,16 @@ const choiceResult = document.querySelector("#choice-result");
 // Handles for dynamically created elements
 let highScoreAnchor, quizHeader, instructions, startButton, 
     formHeading, initialsLabel, initialsInput, submitButton;
-let multChoiceAns;  //Table of target handles
+let multChoiceAns, highScoreEl;  //Tables of target handles
 let timeInterval;  //Interval handle
 
 // Misc variables, etc.
-let score = 0, qIndex = 0, resultText = "", countDownMsg, secondsLeft = 30, initialsStore;
+let score = 0, qIndex = 0, resultText = "", countDownMsg, secondsLeft = 30;
+let highScores = [];
+let highScore = {
+    initials: null,
+    score: null
+}
 
 // Var with array and object for questions 
 const questions = [
@@ -235,7 +240,6 @@ function renderQuestionForm (qIndex) {
         multChoiceAnswers.style.margin = "10px 250px 10px 350px";
         multChoiceAnswers.appendChild(multChoiceAns[qIndex]);
     }
-
     renderChoiceResult();
 }
 
@@ -285,13 +289,53 @@ function allDoneForm () {
     renderChoiceResult();
 }
 
-function highScores () {
-    console.log("High score function called.");
+function renderHighScores () {
+    // Clear section children elements
+    clearContent();
+
+    // Append High Scores children
+    // Question section - used for heading and scores list top 5
+    pageHeading = document.createElement("h2");
+    pageHeading.innerHTML = "High scores";
+    questionSection.appendChild(pageHeading);
+
+    // Sort in descending order by score
+    // highScores.reverse( compare );
+    highScores.sort(compare);
+    highScoreEl = [];
+
+    for (let i = 0; i < Math.min(highScores.length,5); i++) {
+        highScoreEl[i] = document.createElement("section");
+        highScoreEl[i].innerHTML = (i + 1) + ". " + highScores[i].initials + " - " + highScores[i].score;
+        highScoreEl[i].style.height = "30px";
+        highScoreEl[i].style.fontSize = "16px";
+        highScoreEl[i].style.margin = "10px";
+        highScoreEl[i].style.backgroundColor = "rgb(173, 117, 173)";
+        highScoreEl[i].style.textAlign = "start";
+        multChoiceAnswers.appendChild(highScoreEl[i]);
+    }
 }
+
+// https://stackoverflow.com/questions/1129216/sort-array-of-objects-by-string-property-value
+function compare( a, b ) {
+    if ( a.score > b.score ){
+      return -1;
+    }
+    if ( a.score < b.score ){
+      return 1;
+    }
+    return 0;
+};
+// var objs = [ 
+//     { first_nom: 'Lazslo', last_nom: 'Jamf'     },
+//     { first_nom: 'Pig',    last_nom: 'Bodine'   },
+//     { first_nom: 'Pirate', last_nom: 'Prentice' }
+// ];
+// objs.sort( compare );
 
 // Process link clicked in page header
 viewHSLinkEl.addEventListener("click", function() {
-    highScores();
+    renderHighScores();
 });
 
 // Process button click in multChoiceAnswers section
@@ -323,8 +367,16 @@ multChoiceAnswers.addEventListener("click", function(event) {
     }
     // Check for submit on All Done form
     if (element.matches("button") && element.id === "all-done-submit") {
-        initialsStore = document.getElementById("name").value;
-        console.log("Store score " + score + " and initials " + initialsStore);
+        // console.log("Store score " + score + " and initials " + initialsStore);
+        highScores = JSON.parse(localStorage.getItem("highScores"));
+        if (highScores === null) {
+            highScores = [];
+        }
+        highScore.initials = document.getElementById("name").value;
+        highScore.score = score;
+        highScores.push(highScore);
+        localStorage.setItem("highScores", JSON.stringify(highScores));
+        renderHighScores();
         choiceResult.innerHTML = "";
     }
 });
