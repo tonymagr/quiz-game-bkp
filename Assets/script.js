@@ -5,12 +5,13 @@ const multChoiceAnswers = document.querySelector("#mult-choice-answers");
 const choiceResult = document.querySelector("#choice-result");
 
 // Handles for dynamically created elements
-let highScoreAnchor, quizHeader, instructions, startButton;
+let highScoreAnchor, quizHeader, instructions, startButton, 
+    formHeading, initialsLabel, initialsInput, submitButton;
 let multChoiceAns;  //Table of target handles
 let timeInterval;  //Interval handle
 
 // Misc variables, etc.
-let score = 0, qIndex = 0, resultText = "", countDownMsg, secondsLeft = 10;
+let score = 0, qIndex = 0, resultText = "", countDownMsg, secondsLeft = 30, initialsStore;
 
 // Var with array and object for questions 
 const questions = [
@@ -190,7 +191,17 @@ function startQuiz () {
     startButton.style.backgroundColor = "purple";
     startButton.setAttribute("data-index", 0);
     startButton.setAttribute("id","start-quiz");
+    multChoiceAnswers.style.margin = "10px 500px 10px 650px";
     multChoiceAnswers.appendChild(startButton);
+}
+
+function renderChoiceResult () {
+    // Render choice result section
+    result = document.createElement("h3");
+    result.style.color = "lightgray";
+    result.style.fontStyle = "italic";
+    result.innerHTML = resultText;
+    choiceResult.appendChild(result);
 }
 
 function renderQuestionForm (qIndex) {
@@ -221,20 +232,57 @@ function renderQuestionForm (qIndex) {
         multChoiceAns[qIndex].style.borderRadius = "10px";
         multChoiceAns[qIndex].setAttribute("id","quiz-answer-" + i);
         multChoiceAns[qIndex].setAttribute("data-index", i);
+        multChoiceAnswers.style.margin = "10px 250px 10px 350px";
         multChoiceAnswers.appendChild(multChoiceAns[qIndex]);
     }
 
-    // Choice result section
-    result = document.createElement("h3");
-    result.style.color = "lightgray";
-    result.style.fontStyle = "italic";
-    result.innerHTML = resultText;
-    choiceResult.appendChild(result);
+    renderChoiceResult();
 }
 
 function allDoneForm () {
-    console.log("Finished quiz.");
-    console.log("Score: " + score);
+    // Clear section children elements
+    clearContent();
+
+    // Append All Done children
+    // Question section - used for heading and final score
+    formHeading = document.createElement("h2");
+    formHeading.innerHTML = "All done!";
+    questionSection.appendChild(formHeading);
+    finalScoreText = document.createElement("h3");
+    finalScoreText.innerHTML = "Your final score is " + score + ".";
+    questionSection.appendChild(finalScoreText);
+    
+    // Multiple choice answers section - used to enter initials for current score
+    initialsLabel = document.createElement("label");
+    initialsLabel.innerHTML = "Enter initials:";
+    initialsLabel.setAttribute("for", "name");
+    initialsLabel.setAttribute("id", "all-done-label")
+    multChoiceAnswers.appendChild(initialsLabel);
+    initialsInput = document.createElement("input");
+    initialsInput.setAttribute("type", "text");
+    initialsInput.setAttribute("id", "name");
+    initialsInput.setAttribute("name", "name");
+    initialsInput.setAttribute("minlength", "1");
+    initialsInput.setAttribute("maxlength", "10");
+    initialsInput.setAttribute("required", "true");
+    // initialsInput.setAttribute("size", "10");
+    multChoiceAnswers.appendChild(initialsInput);
+    submitButton = document.createElement("button");
+    submitButton.innerHTML = "Submit";
+    submitButton.style.width = "80px";
+    submitButton.style.height = "40px";
+    submitButton.style.fontSize = "16px";
+    submitButton.style.color = "white";
+    submitButton.style.margin = "10px";
+    submitButton.style.borderRadius = "10px";
+    submitButton.style.backgroundColor = "purple";
+    submitButton.setAttribute("data-index", 2);
+    submitButton.setAttribute("id","all-done-submit");
+    multChoiceAnswers.appendChild(submitButton);
+
+    // instructions.style.textAlign = "center";
+
+    renderChoiceResult();
 }
 
 function highScores () {
@@ -272,6 +320,12 @@ multChoiceAnswers.addEventListener("click", function(event) {
     if (element.matches("button") && element.id === "start-quiz") {
         countDownInterval();
         renderQuestionForm(qIndex);
+    }
+    // Check for submit on All Done form
+    if (element.matches("button") && element.id === "all-done-submit") {
+        initialsStore = document.getElementById("name").value;
+        console.log("Store score " + score + " and initials " + initialsStore);
+        choiceResult.innerHTML = "";
     }
 });
 
