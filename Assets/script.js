@@ -5,10 +5,10 @@ const multChoiceAnswers = document.querySelector("#mult-choice-answers");
 const choiceResult = document.querySelector("#choice-result");
 
 // Handles for dynamically created elements
-let highScoreAnchor, quizHeader, instructions, startButton, 
-    formHeading, initialsLabel, initialsInput, submitButton;
-let multChoiceAns, highScoreEl;  //Tables of target handles
-let timeInterval;  //Interval handle
+let highScoreAnchor, quizHeader, instructions, startButton, sectionRow, sectionInitials,
+    formHeading, initialsLabel, initialsInput, submitButton, goBackButton, clearScoresButton;
+let multChoiceAns, highScoreEl;         //Tables of target handles
+let timeInterval;                       //Interval handle
 
 // Misc variables, etc.
 let score = 0, qIndex = 0, resultText = "", countDownMsg, secondsLeft = 30;
@@ -166,14 +166,18 @@ function startQuiz () {
     // Display counter
     let countDownMsg = "Time: " + secondsLeft;
     countDown.innerHTML = countDownMsg;
-    
-    // Clear section children elements
+
+    // Clear section children elements and set default header display
     clearContent();
+    viewHSLinkEl.style.visibility = "visible";
+    countDown.style.visibility = "visible";
+
     // Append startQuiz children
     // Question section
     quizHeader = document.createElement("h2");
     quizHeader.innerHTML = "Coding Quiz Challenge";
     quizHeader.style.textAlign = "center";
+    questionSection.style.height = "150px";
     questionSection.appendChild(quizHeader);
     questionSection.setAttribute("margin-left", "auto");
     questionSection.setAttribute("margin-right", "auto");
@@ -190,10 +194,6 @@ function startQuiz () {
     startButton.innerHTML = "Start Quiz";
     startButton.style.width = "100px";
     startButton.style.height = "50px";
-    startButton.style.fontSize = "16px";
-    startButton.style.color = "white";
-    startButton.style.borderRadius = "10px";
-    startButton.style.backgroundColor = "purple";
     startButton.setAttribute("data-index", 0);
     startButton.setAttribute("id","start-quiz");
     multChoiceAnswers.style.margin = "10px 500px 10px 650px";
@@ -210,7 +210,6 @@ function renderChoiceResult () {
 }
 
 function renderQuestionForm (qIndex) {
-    console.log("Score: " + score);
     // Clear section children elements
     clearContent();
 
@@ -229,12 +228,8 @@ function renderQuestionForm (qIndex) {
         multChoiceAns[qIndex].innerHTML = questions[qIndex].choices[i];
         multChoiceAns[qIndex].style.width = "250px";
         multChoiceAns[qIndex].style.height = "80px";
-        multChoiceAns[qIndex].style.fontSize = "16px";
         multChoiceAns[qIndex].style.margin = "5px";
-        multChoiceAns[qIndex].style.color = "white";
-        multChoiceAns[qIndex].style.backgroundColor = "purple";
         multChoiceAns[qIndex].style.textAlign = "start";
-        multChoiceAns[qIndex].style.borderRadius = "10px";
         multChoiceAns[qIndex].setAttribute("id","quiz-answer-" + i);
         multChoiceAns[qIndex].setAttribute("data-index", i);
         multChoiceAnswers.style.margin = "10px 250px 10px 350px";
@@ -251,17 +246,28 @@ function allDoneForm () {
     // Question section - used for heading and final score
     formHeading = document.createElement("h2");
     formHeading.innerHTML = "All done!";
+    questionSection.style.height = "75px";
     questionSection.appendChild(formHeading);
     finalScoreText = document.createElement("h3");
     finalScoreText.innerHTML = "Your final score is " + score + ".";
     questionSection.appendChild(finalScoreText);
     
+    // Create section to override flex-direction to row.
+    sectionInitials = document.createElement("section");
+    sectionInitials.style.height = "60px";
+    sectionInitials.setAttribute("display","flex");
+    sectionInitials.setAttribute("justify-content","space-around");
+    sectionInitials.setAttribute("flex-direction","row");
+    multChoiceAnswers.style.height = "75px";
+    multChoiceAnswers.appendChild(sectionInitials);
+
     // Multiple choice answers section - used to enter initials for current score
     initialsLabel = document.createElement("label");
     initialsLabel.innerHTML = "Enter initials:";
     initialsLabel.setAttribute("for", "name");
     initialsLabel.setAttribute("id", "all-done-label")
-    multChoiceAnswers.appendChild(initialsLabel);
+    sectionInitials.appendChild(initialsLabel);
+
     initialsInput = document.createElement("input");
     initialsInput.setAttribute("type", "text");
     initialsInput.setAttribute("id", "name");
@@ -269,22 +275,16 @@ function allDoneForm () {
     initialsInput.setAttribute("minlength", "1");
     initialsInput.setAttribute("maxlength", "10");
     initialsInput.setAttribute("required", "true");
-    // initialsInput.setAttribute("size", "10");
-    multChoiceAnswers.appendChild(initialsInput);
+    sectionInitials.appendChild(initialsInput);
+    
     submitButton = document.createElement("button");
     submitButton.innerHTML = "Submit";
     submitButton.style.width = "80px";
     submitButton.style.height = "40px";
-    submitButton.style.fontSize = "16px";
-    submitButton.style.color = "white";
     submitButton.style.margin = "10px";
-    submitButton.style.borderRadius = "10px";
-    submitButton.style.backgroundColor = "purple";
     submitButton.setAttribute("data-index", 2);
     submitButton.setAttribute("id","all-done-submit");
-    multChoiceAnswers.appendChild(submitButton);
-
-    // instructions.style.textAlign = "center";
+    sectionInitials.appendChild(submitButton);
 
     renderChoiceResult();
 }
@@ -292,31 +292,67 @@ function allDoneForm () {
 function renderHighScores () {
     // Clear section children elements
     clearContent();
+    // Hide header: link to high scores and counter
+    viewHSLinkEl.style.visibility = "hidden";
+    countDown.style.visibility = "hidden";
 
     // Append High Scores children
     // Question section - used for heading and scores list top 5
     pageHeading = document.createElement("h2");
     pageHeading.innerHTML = "High scores";
+    questionSection.style.height = "40px";
     questionSection.appendChild(pageHeading);
 
     // Sort in descending order by score
     // highScores.reverse( compare );
     highScores.sort(compare);
     highScoreEl = [];
+    multChoiceAnswers.style.height = "200px";
 
+    // Display high scores
     for (let i = 0; i < Math.min(highScores.length,5); i++) {
         highScoreEl[i] = document.createElement("section");
         highScoreEl[i].innerHTML = (i + 1) + ". " + highScores[i].initials + " - " + highScores[i].score;
-        highScoreEl[i].style.height = "30px";
+        highScoreEl[i].style.height = "20px";
         highScoreEl[i].style.fontSize = "16px";
-        highScoreEl[i].style.margin = "10px";
-        highScoreEl[i].style.backgroundColor = "rgb(173, 117, 173)";
+        highScoreEl[i].style.margin = "5px 0px";
+        highScoreEl[i].style.backgroundColor = "rgb(212, 193, 212)";
         highScoreEl[i].style.textAlign = "start";
+        multChoiceAnswers.style.margin = "10px 250px 10px 350px";
         multChoiceAnswers.appendChild(highScoreEl[i]);
     }
+        
+    // Create section to override flex-direction to row.
+    sectionRow = document.createElement("section");
+    sectionRow.style.height = "60px";
+    sectionRow.setAttribute("display","flex");
+    sectionRow.setAttribute("justify-content","left");
+    sectionRow.setAttribute("flex-direction","row");
+    sectionRow.setAttribute("id", "section-row");
+    multChoiceAnswers.appendChild(sectionRow);
+
+    // Render Go back and Clear high scores buttons
+    goBackButton = document.createElement("button");
+    goBackButton.innerHTML = "Go back";
+    goBackButton.style.width = "80px";
+    goBackButton.style.height = "40px";
+    goBackButton.style.margin = "10px";
+    goBackButton.setAttribute("data-index", 0);
+    goBackButton.setAttribute("id","go-back");
+    sectionRow.appendChild(goBackButton);
+
+    clearScoresButton = document.createElement("button");
+    clearScoresButton.innerHTML = "Clear high scores";
+    clearScoresButton.style.width = "150px";
+    clearScoresButton.style.height = "40px";
+    clearScoresButton.style.margin = "10px";
+    clearScoresButton.setAttribute("data-index", 1);
+    clearScoresButton.setAttribute("id","clear-scores");
+    sectionRow.appendChild(clearScoresButton);
 }
 
 // https://stackoverflow.com/questions/1129216/sort-array-of-objects-by-string-property-value
+// Modified to sort descending
 function compare( a, b ) {
     if ( a.score > b.score ){
       return -1;
@@ -326,15 +362,13 @@ function compare( a, b ) {
     }
     return 0;
 };
-// var objs = [ 
-//     { first_nom: 'Lazslo', last_nom: 'Jamf'     },
-//     { first_nom: 'Pig',    last_nom: 'Bodine'   },
-//     { first_nom: 'Pirate', last_nom: 'Prentice' }
-// ];
-// objs.sort( compare );
 
 // Process link clicked in page header
 viewHSLinkEl.addEventListener("click", function() {
+    highScores = JSON.parse(localStorage.getItem("highScores"));
+    if (highScores === null) {
+        highScores = [];
+    }
     renderHighScores();
 });
 
@@ -367,7 +401,6 @@ multChoiceAnswers.addEventListener("click", function(event) {
     }
     // Check for submit on All Done form
     if (element.matches("button") && element.id === "all-done-submit") {
-        // console.log("Store score " + score + " and initials " + initialsStore);
         highScores = JSON.parse(localStorage.getItem("highScores"));
         if (highScores === null) {
             highScores = [];
@@ -379,21 +412,43 @@ multChoiceAnswers.addEventListener("click", function(event) {
         renderHighScores();
         choiceResult.innerHTML = "";
     }
+
+    // Check for Go back button
+    if (element.matches("button") && element.id === "go-back") {
+        qIndex = 0;
+        secondsLeft = 30;
+        score = 0;
+        startQuiz();
+    }
+
+    // Check for Clear high scores button
+    if (element.matches("button") && element.id === "clear-scores") {
+        localStorage.removeItem("highScores");
+        // Clear displayed scores
+        for (let i = 0; i < Math.min(highScores.length,5); i++) {
+            highScoreEl[i].innerHTML = "";
+            highScoreEl[i].style.backgroundColor = "white";
+        }
+    }
 });
 
 multChoiceAnswers.addEventListener("mouseover", function(event) {
     let element = event.target;
-    if (element.matches("button")) {
+    if (element.matches("button") && element.id !== "go-back" && element.id !== "clear-scores") {
         let idx = element.getAttribute("data-index");
-        multChoiceAnswers.children[idx].style.backgroundColor = "rgb(173, 117, 173)";
+        if (multChoiceAnswers.children[idx] !== undefined) {
+            multChoiceAnswers.children[idx].style.backgroundColor = "rgb(173, 117, 173)";
+        }
     }
 });
 
 multChoiceAnswers.addEventListener("mouseout", function(event) {
     let element = event.target;
-    if (element.matches("button")) {
+    if (element.matches("button") && element.id !== "go-back" && element.id !== "clear-scores") {
         let idx = element.getAttribute("data-index");
-        multChoiceAnswers.children[idx].style.backgroundColor = "purple";
+        if (multChoiceAnswers.children[idx] !== undefined) {
+            multChoiceAnswers.children[idx].style.backgroundColor = "purple";
+        }
     }
 });
 
